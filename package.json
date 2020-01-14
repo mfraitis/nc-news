@@ -6,13 +6,17 @@
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "knex seed:run",
+    "seed-test": "NODE_ENV=test knex seed:run",
     "migrate-make": "knex migrate:make",
     "migrate-up": "knex migrate:up",
     "migrate-latest": "knex migrate:latest",
+    "migrate-latest-t": "NODE_ENV=test knex migrate:latest",
+    "migrate-rollback-t": "NODE_ENV=test knex migrate:rollback",
     "migrate-down": "knex migrate:down",
     "migrate-rollback": "knex migrate:rollback",
     "test-utils": "mocha spec/utils.spec.js",
-    "test": "mocha spec/app.spec.js"
+    "test": "mocha spec/server.spec.js",
+    "dev": "nodemon listen.js"
   },
   "repository": {
     "type": "git",
@@ -26,8 +30,14 @@
   },
   "homepage": "https://github.com/northcoders/be-nc-news#readme",
   "dependencies": {
+    "express": "^4.17.1",
     "knex": "^0.20.7",
     "pg": "^7.17.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.0.0",
+    "nodemon": "^2.0.2",
+    "supertest": "^4.0.2"
+  }
 }
