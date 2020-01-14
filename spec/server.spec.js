@@ -27,8 +27,68 @@ describe("/api", () => {
   describe("/users/:username", () => {
     it("GET:200 /api/users/:username responds with status 200", () => {
       return request(server)
-        .get("/api/users/:jonny")
+        .get("/api/users/icellusedkars")
         .expect(200);
+    });
+    it("GET:200 /api/users/:username responds with data in an object ", () => {
+      return request(server)
+        .get("/api/users/icellusedkars")
+        .then(response => {
+          const user = response.body.user;
+          expect(user.username).to.equal("icellusedkars");
+          expect(user).be.be.an("object");
+        });
+    });
+    it("GET:200 /api/users/:username responds with data with correct keys", () => {
+      return request(server)
+        .get("/api/users/icellusedkars")
+        .then(response => {
+          const user = response.body.user;
+          expect(user).to.have.keys(["username", "name", "avatar_url"]);
+        });
+    });
+    describe("/errors", () => {
+      it("GET:404 /api/users/:username responds with an error message when passed a username that does not exist", () => {
+        return request(server)
+          .get("/api/users/none")
+          .then(response => {
+            const msg = response.body.msg;
+            expect(msg).to.equal("User Does Not Exist!");
+          });
+      });
+    });
+  });
+  describe("/articles/:article_id", () => {
+    it("GET:200 /api/articles/:article_id responds with status 200", () => {
+      return request(server)
+        .get("/api/articles/1")
+        .expect(200);
+    });
+    it("GET:200 /api/articles/:article_id responds with article in an object", () => {
+      return request(server)
+        .get("/api/articles/1")
+        .then(response => {
+          const article = response.body.article;
+          expect(article.article_id).to.equal(1);
+          expect(article).to.be.an("object");
+        });
+    });
+    it("GET:200 /api/articles/:article_id responds with article with correct keys", () => {
+      return request(server)
+        .get("/api/articles/1")
+        .then(response => {
+          const article = response.body.article;
+          expect(article).to.have.keys([
+            "article_id",
+            "title",
+            "body",
+            "votes",
+            "topic",
+            "author",
+            "created_at",
+            "comment_count"
+          ]);
+        });
     });
   });
 });
