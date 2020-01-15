@@ -8,7 +8,7 @@ exports.selectUserByUsername = ({ username }) => {
       // .returning("*")
       .then(user => {
         if (user.length === 0) {
-          return Promise.reject({ status: 404, msg: "User Does Not Exist!" });
+          return Promise.reject({ status: 404, msg: "user does not exist!" });
         } else return user[0];
       })
   );
