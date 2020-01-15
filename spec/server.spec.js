@@ -226,12 +226,28 @@ describe("/api", () => {
           expect(comments).to.be.descendingBy("created_at");
         });
     });
-    it("GET:200 /api/articles/:article_id/comments responds comments in ascending order of created_at", () => {
+    it("GET:200 /api/articles/:article_id/comments?order=asc responds with comments in ascending order of created_at", () => {
       return request(server)
         .get("/api/articles/1/comments?order=asc")
         .then(response => {
           const comments = response.body.comments;
           expect(comments).to.be.ascendingBy("created_at");
+        });
+    });
+    it("GET:200 /api/articles/:article_id/comments?sort_by=votes responds with comments in descending  order of votes", () => {
+      return request(server)
+        .get("/api/articles/1/comments?sort_by=votes")
+        .then(response => {
+          const comments = response.body.comments;
+          expect(comments).to.be.descendingBy("votes");
+        });
+    });
+    it("GET:200 /api/articles/:article_id/comments?sort_by=author&order=asc responds with comments in descending  order of votes", () => {
+      return request(server)
+        .get("/api/articles/1/comments?sort_by=author&order=asc")
+        .then(response => {
+          const comments = response.body.comments;
+          expect(comments).to.be.ascendingBy("author");
         });
     });
     describe("/errors", () => {
@@ -277,6 +293,15 @@ describe("/api", () => {
           .then(response => {
             const msg = response.body.msg;
             expect(msg).to.equal("no comments for this article");
+          });
+      });
+      it("GET: /api/articles/:article_id/comments?sort_by=cats responds with error message if provided invalid sort_by column", () => {
+        return request(server)
+          .get("/api/articles/1/comments?sort_by=cats")
+          .expect(400)
+          .then(response => {
+            const msg = response.body.msg;
+            expect(msg).to.equal("invalid column");
           });
       });
     });
