@@ -1,5 +1,7 @@
 process.env.NODE_ENV = "test";
-const { expect } = require("chai");
+const chai = require("chai");
+const expect = chai.expect;
+chai.use(require("sams-chai-sorted"));
 const request = require("supertest");
 const server = require("../server");
 const connection = require("../db/connection");
@@ -166,8 +168,8 @@ describe("/api", () => {
       });
     });
   });
-  describe.only("/articles/:article_id/comments", () => {
-    it("GET: 201 /api/articles/:article:id/comments responds with status 201 and new comment posted to existing username", () => {
+  describe("/articles/:article_id/comments", () => {
+    it("POST: 201 /api/articles/:article:id/comments responds with status 201 and new comment posted to existing username", () => {
       return request(server)
         .post("/api/articles/1/comments")
         .send({ username: "icellusedkars", body: "new comment" })
@@ -177,7 +179,7 @@ describe("/api", () => {
           expect(comment).to.eql({ comment: "new comment" });
         });
     });
-    it("GET: 201 /api/articles/:article:id/comments responds with comment in an object with key comment", () => {
+    it("POST: 201 /api/articles/:article:id/comments responds with comment in an object with key comment", () => {
       return request(server)
         .post("/api/articles/1/comments")
         .send({ username: "icellusedkars", body: "new comment" })
@@ -188,25 +190,93 @@ describe("/api", () => {
           expect(comment).to.have.keys("comment");
         });
     });
+    it("GET:200 /api/articles/:article_id/comments responds with status 200 ", () => {
+      return request(server)
+        .get("/api/articles/1/comments")
+        .expect(200);
+    });
+    it("GET:200 /api/articles/:article_id/comments responds with an array of comment objects", () => {
+      return request(server)
+        .get("/api/articles/5/comments")
+        .then(response => {
+          const comments = response.body.comments;
+          expect(comments[0]).to.be.an("object");
+          expect(comments).to.be.an("array");
+        });
+    });
+    it("GET:200 /api/articles/:article_id/comments responds with an array of comment objects with correct keys", () => {
+      return request(server)
+        .get("/api/articles/5/comments")
+        .then(response => {
+          const comments = response.body.comments;
+          expect(comments[0]).to.have.keys(
+            "comment_id",
+            "votes",
+            "created_at",
+            "author",
+            "body"
+          );
+        });
+    });
+    it("GET:200 /api/articles/:article_id/comments responds comments in descending order of created_at by default", () => {
+      return request(server)
+        .get("/api/articles/1/comments")
+        .then(response => {
+          const comments = response.body.comments;
+          expect(comments).to.be.descendingBy("created_at");
+        });
+    });
+    it("GET:200 /api/articles/:article_id/comments responds comments in ascending order of created_at", () => {
+      return request(server)
+        .get("/api/articles/1/comments?order=asc")
+        .then(response => {
+          const comments = response.body.comments;
+          expect(comments).to.be.ascendingBy("created_at");
+        });
+    });
     describe("/errors", () => {
-      it("GET: 400 /api/articles/:article:id/comments responds with error message if username does not exist", () => {
+      it("POST:400 /api/articles/:article_id/comments responds with error message when passed an empty object", () => {
         return request(server)
           .post("/api/articles/1/comments")
-          .send({ username: "new_user", body: "new comment" })
+          .send({})
+          .expect(400)
+          .then(response => {
+            const msg = response.body.msg;
+            expect(msg).to.eql("input data missing");
+          });
+      });
+      it("POST:400 /api/articles/:article:id/comments responds with error message if username does not exist", () => {
+        return request(server)
+          .post("/api/articles/1/comments")
+          .send({
+            username: "new_user",
+            body: "new comment"
+          })
           .expect(400)
           .then(response => {
             const msg = response.body.msg;
             expect(msg).to.eql("no reference available to data provided");
           });
       });
-      it("GET: 400 /api/articles/:article:id/comments responds with error message if article does not exist", () => {
+      it("POST:400 /api/articles/:article:id/comments responds with error message if article does not exist", () => {
         return request(server)
           .post("/api/articles/10000/comments")
-          .send({ username: "icellusedkars", body: "new comment" })
+          .send({
+            username: "icellusedkars",
+            body: "new comment"
+          })
           .expect(400)
           .then(response => {
             const msg = response.body.msg;
             expect(msg).to.equal("no reference available to data provided");
+          });
+      });
+      it("GET:404 /api/articles/:article_id/comments responds with error message if passed an article_id with no comments", () => {
+        return request(server)
+          .get("/api/articles/3/comments")
+          .then(response => {
+            const msg = response.body.msg;
+            expect(msg).to.equal("no comments for this article");
           });
       });
     });
@@ -214,14 +284,3 @@ describe("/api", () => {
 });
 
 //expect().to.contain.keys('','','')
-
-// it("GET: 400 /api/articles/:article:id/comments responds with error message if post body contains extra data", () => {
-//   return request(server)
-//     .post("/api/articles/10/comments")
-//     .send({ username: "icellusedkars", body: "new comment", cats: 5 })
-//     .expect(400)
-//     .then(response => {
-//       const msg = response.body.msg;
-//       expect(msg).to.equal("");
-//     });
-// });

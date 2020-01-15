@@ -6,7 +6,7 @@ server.use(express.json());
 server.use("/api", apiRouter);
 server.use((err, req, res, next) => {
   if (err.code) {
-    console.log(err.code);
+    // console.log(err.code);
     const errRef = {
       "22P02": "invalid data type",
       "22003": "out of range",
