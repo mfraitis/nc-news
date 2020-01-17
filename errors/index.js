@@ -1,6 +1,6 @@
 exports.handlePsqlErrors = (err, req, res, next) => {
   if (err.code) {
-    console.log(err.code);
+    // console.log(err.code);
     const errRef = {
       "22P02": { msg: "invalid data type", status: 400 },
       "22003": { msg: "out of range", status: 400 },
