@@ -6,7 +6,7 @@ exports.selectArticlesById = ({ article_id }) => {
     .where("articles.article_id", article_id)
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .groupBy("articles.article_id")
-    .count({ comment_count: "articles.article_id" })
+    .count({ comment_count: "comments.comment_id" })
     .then(article => {
       if (article.length === 0) {
         return Promise.reject({ status: 404, msg: "article does not exist!" });
@@ -131,7 +131,7 @@ exports.selectAllArticles = ({ sort_by, order, author, topic }) => {
             .then(arr => {
               if (arr.length === 0) {
                 return Promise.reject({
-                  status: 400,
+                  status: 404,
                   msg: "topic does not exist"
                 });
               } else {
@@ -148,7 +148,7 @@ exports.selectAllArticles = ({ sort_by, order, author, topic }) => {
             .then(arr => {
               if (arr.length === 0) {
                 return Promise.reject({
-                  status: 400,
+                  status: 404,
                   msg: "author does not exist"
                 });
               } else {

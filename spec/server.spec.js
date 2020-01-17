@@ -371,16 +371,16 @@ describe("/api", () => {
             expect(msg).to.equal("order input invalid");
           });
       });
-      it("aaahahhh", () => {
+      it("GET:404 /api/articles?topic responds with an error message when passed an error that does not exist", () => {
         return request(server)
           .get("/api/articles?topic=none")
-          .expect(400)
+          .expect(404)
           .then(response => {
             const msg = response.body.msg;
             expect(msg).to.equal("topic does not exist");
           });
       });
-      it("ah", () => {
+      it("GET:404 /api/articles?topic responds with error message when passed a topic that does exist but has no articles", () => {
         return request(server)
           .get("/api/articles?topic=paper")
           .expect(404)

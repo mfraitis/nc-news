@@ -19,4 +19,8 @@ articlesRouter
 
 articlesRouter.route("/").get(getAllArticles);
 
+articlesRouter.all("/*", (err, req, res, next) => {
+  res.status(405).send({ msg: "Method Not Found status code" });
+});
+
 module.exports = articlesRouter;
