@@ -261,27 +261,27 @@ describe("/api", () => {
             expect(msg).to.eql("input data missing");
           });
       });
-      it("POST:400 /api/articles/:article:id/comments responds with error message if username does not exist", () => {
+      it("POST:422 /api/articles/:article:id/comments responds with error message if username does not exist", () => {
         return request(server)
           .post("/api/articles/1/comments")
           .send({
             username: "new_user",
             body: "new comment"
           })
-          .expect(400)
+          .expect(422)
           .then(response => {
             const msg = response.body.msg;
             expect(msg).to.eql("no reference available to data provided");
           });
       });
-      it("POST:400 /api/articles/:article:id/comments responds with error message if article does not exist", () => {
+      it("POST:422 /api/articles/:article:id/comments responds with error message if article does not exist", () => {
         return request(server)
           .post("/api/articles/10000/comments")
           .send({
             username: "icellusedkars",
             body: "new comment"
           })
-          .expect(400)
+          .expect(422)
           .then(response => {
             const msg = response.body.msg;
             expect(msg).to.equal("no reference available to data provided");

@@ -2,14 +2,14 @@ exports.handlePsqlErrors = (err, req, res, next) => {
   if (err.code) {
     console.log(err.code);
     const errRef = {
-      "22P02": "invalid data type",
-      "22003": "out of range",
-      "23503": "no reference available to data provided",
-      "42703": "invalid column",
-      "42601": "psql syntax error",
-      "42P01": "relation does not exist"
+      "22P02": { msg: "invalid data type", status: 400 },
+      "22003": { msg: "out of range", status: 400 },
+      "23503": { msg: "no reference available to data provided", status: 422 },
+      "42703": { msg: "invalid column", status: 400 },
+      "42601": { msg: "psql syntax error", status: 400 },
+      "42P01": { msg: "relation does not exist", status: 400 }
     };
-    res.status(400).send({ msg: errRef[err.code] });
+    res.status(errRef[err.code].status).send({ msg: errRef[err.code].msg });
   } else next(err);
 };
 
