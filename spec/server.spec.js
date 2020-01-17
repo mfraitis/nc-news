@@ -391,7 +391,7 @@ describe("/api", () => {
       });
     });
   });
-  describe.only("/api/comments/:comment_id", () => {
+  describe("/api/comments/:comment_id", () => {
     it("PATCH:200 /api/comments/:comment_id responds with status 200", () => {
       return request(server)
         .patch("/api/comments/1")
@@ -400,6 +400,23 @@ describe("/api", () => {
         .then(response => {
           const comment = response.body.comment;
           expect(comment).to.be.an("object");
+          expect(comment.votes).to.equal(17);
+        });
+    });
+    it("PATCH:200 /api/comments/:comment_id responds with comment with correct keys", () => {
+      return request(server)
+        .patch("/api/comments/1")
+        .expect(200)
+        .send({ inc_votes: 1 })
+        .then(response => {
+          const comment = response.body.comment;
+          expect(comment).to.contain.keys(
+            "author",
+            "votes",
+            "comment_id",
+            "article_id",
+            "body"
+          );
         });
     });
     it("DELETE:204 /api/comments/:comment_id responds with status 204 and an empty body", () => {
@@ -422,6 +439,16 @@ describe("/api", () => {
             expect(msg).to.equal("invalid body provided");
           });
       });
+      it("PATCH:400 /api/comments/:comment_id responds with error message if provided comment id that does not exist", () => {
+        return request(server)
+          .patch("/api/comments/18383")
+          .send({ inc_votes: 1 })
+          .expect(404)
+          .then(response => {
+            const msg = response.body.msg;
+            expect(msg).to.equal("comment does not exist");
+          });
+      });
       it("DELETE:400 /api/comments/:comment_id responds with status error message if provided comment id that does not exist", () => {
         return request(server)
           .delete("/api/comments/19393")
@@ -441,5 +468,3 @@ describe("/api", () => {
     });
   });
 });
-
-//expect().to.contain.keys('','','')

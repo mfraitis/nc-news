@@ -121,49 +121,52 @@ exports.selectAllArticles = query => {
       .count({ comment_count: "articles.article_id" })
       .orderBy(sort_by || "created_at", order || "desc")
       .modify(query => {
-        if (author) return query.where("articles.author", author);
-        if (topic) return query.where("topic", topic);
+        if (author) query.where("articles.author", author);
+        if (topic) query.where("topic", topic);
       })
       .returning("*")
       .then(articles => {
         if (articles.length !== 0) {
           return articles;
-        } else {
-          if (topic) {
-            return connection("topics")
-              .select("*")
-              .where("slug", topic)
-              .then(arr => {
-                if (arr.length === 0) {
-                  return Promise.reject({
-                    status: 400,
-                    msg: "topic does not exist"
-                  });
-                } else if (author) {
-                  return connection("users")
-                    .select("*")
-                    .where("username", user)
-                    .then(arr => {
-                      if (arr.length === 0) {
-                        return Promise.reject({
-                          status: 400,
-                          msg: "author does not exist"
-                        });
-                      }
-                    });
-                } else {
-                  return Promise.reject({
-                    status: 404,
-                    msg: "article does not exist"
-                  });
-                }
-              });
-          } else {
-            return Promise.reject({
-              status: 404,
-              msg: "article does not exist"
+        } else if (topic) {
+          return connection("topics")
+            .select("*")
+            .where("slug", topic)
+            .then(arr => {
+              if (arr.length === 0) {
+                return Promise.reject({
+                  status: 400,
+                  msg: "topic does not exist"
+                });
+              } else {
+                return Promise.reject({
+                  status: 404,
+                  msg: "article does not exist"
+                });
+              }
             });
-          }
+        } else if (author) {
+          return connection("users")
+            .select("*")
+            .where("username", user)
+            .then(arr => {
+              if (arr.length === 0) {
+                return Promise.reject({
+                  status: 400,
+                  msg: "author does not exist"
+                });
+              } else {
+                return Promise.reject({
+                  status: 404,
+                  msg: "article does not exist"
+                });
+              }
+            });
+        } else {
+          return Promise.reject({
+            status: 404,
+            msg: "article does not exist"
+          });
         }
       });
   }
