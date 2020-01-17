@@ -175,8 +175,8 @@ describe("/api", () => {
         .send({ username: "icellusedkars", body: "new comment" })
         .expect(201)
         .then(response => {
-          const comment = response.body;
-          expect(comment).to.eql({ comment: "new comment" });
+          const comment = response.body.comment;
+          expect(comment.body).to.eql("new comment");
         });
     });
     it("POST: 201 /api/articles/:article:id/comments responds with comment in an object with key comment", () => {
@@ -295,13 +295,147 @@ describe("/api", () => {
             expect(msg).to.equal("no comments for this article");
           });
       });
-      it("GET: /api/articles/:article_id/comments?sort_by=cats responds with error message if provided invalid sort_by column", () => {
+      it("GET:400 /api/articles/:article_id/comments?sort_by=cats responds with error message if provided invalid sort_by column", () => {
         return request(server)
           .get("/api/articles/1/comments?sort_by=cats")
           .expect(400)
           .then(response => {
             const msg = response.body.msg;
             expect(msg).to.equal("invalid column");
+          });
+      });
+      it("GET:404 /api/articles/:article_id/comments responds with error message if provided an article id that does not exist", () => {
+        return request(server)
+          .get("/api/articles/1874/comments")
+          .then(response => {
+            const msg = response.body.msg;
+            expect(msg).to.equal("article does not exist");
+          });
+      });
+    });
+  });
+  describe("/articles", () => {
+    it("GET:200 /api/articles responds with status 200 and in an array", () => {
+      return request(server)
+        .get("/api/articles")
+        .expect(200)
+        .then(response => {
+          const articles = response.body.articles;
+          expect(articles).to.be.an("array");
+        });
+    });
+    it("GET:200 /api/articles?author= responds with all article objects created by that author", () => {
+      return request(server)
+        .get("/api/articles?author=icellusedkars")
+        .expect(200)
+        .then(response => {
+          const articles = response.body.articles;
+          expect(articles.every(obj => typeof obj === "object")).to.equal(true);
+          expect(articles.length).to.equal(6);
+        });
+    });
+    it("GET:200 /api/articles?topic= responds with all articles with that topic", () => {
+      return request(server)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then(response => {
+          const articles = response.body.articles;
+          expect(articles.length).to.equal(1);
+        });
+    });
+    it("GET:200 /api/articles responds with all articles ordered by date in descending order by default", () => {
+      return request(server)
+        .get("/api/articles")
+        .expect(200)
+        .then(response => {
+          const articles = response.body.articles;
+          expect(articles).to.be.descendingBy("created_at");
+        });
+    });
+    it("GET:200 /api/articles?sort_by=votes&order=asc responds with all articles ordered by date in descending order by default", () => {
+      return request(server)
+        .get("/api/articles?sort_by=votes&order=asc")
+        .expect(200)
+        .then(response => {
+          const articles = response.body.articles;
+          expect(articles).to.be.ascendingBy("votes");
+        });
+    });
+    describe("/errors", () => {
+      it("GET:400 /api/articles?order=as responds with error message when passed invalid order", () => {
+        return request(server)
+          .get("/api/articles?order=as")
+          .expect(400)
+          .then(response => {
+            const msg = response.body.msg;
+            expect(msg).to.equal("order input invalid");
+          });
+      });
+      it("aaahahhh", () => {
+        return request(server)
+          .get("/api/articles?topic=none")
+          .expect(400)
+          .then(response => {
+            const msg = response.body.msg;
+            expect(msg).to.equal("topic does not exist");
+          });
+      });
+      it("ah", () => {
+        return request(server)
+          .get("/api/articles?topic=paper")
+          .expect(404)
+          .then(response => {
+            const msg = response.body.msg;
+            expect(msg).to.equal("article does not exist");
+          });
+      });
+    });
+  });
+  describe.only("/api/comments/:comment_id", () => {
+    it("PATCH:200 /api/comments/:comment_id responds with status 200", () => {
+      return request(server)
+        .patch("/api/comments/1")
+        .expect(200)
+        .send({ inc_votes: 1 })
+        .then(response => {
+          const comment = response.body.comment;
+          expect(comment).to.be.an("object");
+        });
+    });
+    it("DELETE:204 /api/comments/:comment_id responds with status 204 and an empty body", () => {
+      return request(server)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then(response => {
+          expect(response.body).to.be.an("object");
+          expect(response.body).to.eql({});
+        });
+    });
+    describe("/errors", () => {
+      it("PATCH:400 /api/comments/:comment_id responds with error message if invalid body provided", () => {
+        return request(server)
+          .patch("/api/comments/1")
+          .send({ invotes: 1 })
+          .expect(400)
+          .then(response => {
+            const msg = response.body.msg;
+            expect(msg).to.equal("invalid body provided");
+          });
+      });
+      it("DELETE:400 /api/comments/:comment_id responds with status error message if provided comment id that does not exist", () => {
+        return request(server)
+          .delete("/api/comments/19393")
+          .expect(response => {
+            const msg = response.body.msg;
+            expect(msg).to.equal("no comment found");
+          });
+      });
+      it("DELETE:400 /api/comments/:comment_id responds with status error message if provided invalid data type", () => {
+        return request(server)
+          .delete("/api/comments/hello")
+          .expect(response => {
+            const msg = response.body.msg;
+            expect(msg).to.equal("invalid data type");
           });
       });
     });
