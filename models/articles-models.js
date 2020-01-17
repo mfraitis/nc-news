@@ -54,7 +54,10 @@ exports.insertComment = ({ article_id }, { username, body }) => {
 
 exports.selectCommentsByArticleId = ({ article_id }, query) => {
   const { sort_by, order } = query;
-  // if (Object.keys(query) !== 0 && (!sort_by || !order)) {
+  // if (
+  //   (Object.keys(query) !== 0 && Object.hasOwnProperty("sort_by")) &&
+  //   Object.hasOwnProperty("order")
+  // ) {
   //   return Promise.reject({
   //     status: 400,
   //     msg: "invalid query"
@@ -93,14 +96,7 @@ exports.selectCommentsByArticleId = ({ article_id }, query) => {
   }
 };
 
-exports.selectAllArticles = query => {
-  const { sort_by, order, author, topic } = query;
-  // if (Object.keys(query) !== 0 && !sort_by && !order) {
-  //   return Promise.reject({
-  //     status: 400,
-  //     msg: "invalid query"
-  //   });
-  // }
+exports.selectAllArticles = ({ sort_by, order, author, topic }) => {
   if (order && order !== "asc" && order !== "desc") {
     return Promise.reject({
       status: 400,
