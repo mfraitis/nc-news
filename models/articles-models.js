@@ -21,24 +21,21 @@ exports.selectArticlesById = ({ article_id }) => {
     });
 };
 
-exports.updateArticleById = ({ article_id }, body) => {
-  const inc_votes = body.inc_votes;
-  if (inc_votes && Object.keys(body).length === 1) {
-    return connection("articles")
-      .select("*")
-      .increment("votes", inc_votes)
-      .where("article_id", article_id)
-      .returning("*")
-      .then(article => {
-        if (article.length === 0) {
-          return Promise.reject({
-            status: 404,
-            msg: "article does not exist"
-          });
-        }
-        return article[0];
-      });
-  } else return Promise.reject({ status: 400, msg: "invalid body provided" });
+exports.updateArticleById = ({ article_id }, { inc_votes }) => {
+  return connection("articles")
+    .select("*")
+    .increment("votes", inc_votes || 0)
+    .where("article_id", article_id)
+    .returning("*")
+    .then(article => {
+      if (article.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "article does not exist"
+        });
+      }
+      return article[0];
+    });
 };
 
 exports.insertComment = ({ article_id }, { username, body }) => {
@@ -86,12 +83,7 @@ exports.selectCommentsByArticleId = ({ article_id }, query) => {
         }
       })
       .then(comments => {
-        if (comments.length === 0) {
-          return Promise.reject({
-            status: 404,
-            msg: "no comments for this article"
-          });
-        } else return comments;
+        return comments;
       });
   }
 };

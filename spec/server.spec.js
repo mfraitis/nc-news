@@ -127,15 +127,15 @@ describe("/api", () => {
             expect(msg).to.equal("invalid data type");
           });
       });
-      it("PATCH:400 /api/articles/:article_id responds with status 400 when not provided a body", () => {
-        return request(server)
-          .patch("/api/articles/1")
-          .expect(400)
-          .then(response => {
-            const msg = response.body.msg;
-            expect(msg).to.equal("invalid body provided");
-          });
-      });
+      // it("PATCH:400 /api/articles/:article_id responds with status 400 when not provided a body", () => {
+      //   return request(server)
+      //     .patch("/api/articles/1")
+      //     .expect(400)
+      //     .then(response => {
+      //       const msg = response.body.msg;
+      //       expect(msg).to.equal("invalid body provided");
+      //     });
+      // });
       it("PATCH:404 /api/articles/:article_id responds with status 404 when provided an id that does not exist", () => {
         return request(server)
           .patch("/api/articles/1000")
@@ -156,16 +156,16 @@ describe("/api", () => {
             expect(msg).to.equal("invalid data type");
           });
       });
-      it("PATCH:400 /api/articles/:article_id responds with error message when passed another property", () => {
-        return request(server)
-          .patch("/api/articles/1")
-          .expect(400)
-          .send({ inc_votes: "1", name: "Mitch" })
-          .then(response => {
-            const msg = response.body.msg;
-            expect(msg).to.equal("invalid body provided");
-          });
-      });
+      // it("PATCH:400 /api/articles/:article_id responds with error message when passed another property", () => {
+      //   return request(server)
+      //     .patch("/api/articles/1")
+      //     .expect(400)
+      //     .send({ inc_votes: "1", name: "Mitch" })
+      //     .then(response => {
+      //       const msg = response.body.msg;
+      //       expect(msg).to.equal("invalid body provided");
+      //     });
+      // });
     });
   });
   describe("/articles/:article_id/comments", () => {
@@ -285,14 +285,6 @@ describe("/api", () => {
           .then(response => {
             const msg = response.body.msg;
             expect(msg).to.equal("no reference available to data provided");
-          });
-      });
-      it("GET:404 /api/articles/:article_id/comments responds with error message if passed an article_id with no comments", () => {
-        return request(server)
-          .get("/api/articles/3/comments")
-          .then(response => {
-            const msg = response.body.msg;
-            expect(msg).to.equal("no comments for this article");
           });
       });
       it("GET:400 /api/articles/:article_id/comments?sort_by=cats responds with error message if provided invalid sort_by column", () => {
@@ -429,14 +421,14 @@ describe("/api", () => {
         });
     });
     describe("/errors", () => {
-      it("PATCH:400 /api/comments/:comment_id responds with error message if invalid body provided", () => {
+      it("PATCH:200 /api/comments/:comment_id responds with error message if invalid body provided", () => {
         return request(server)
           .patch("/api/comments/1")
           .send({ invotes: 1 })
-          .expect(400)
+          .expect(200)
           .then(response => {
-            const msg = response.body.msg;
-            expect(msg).to.equal("invalid body provided");
+            const comment = response.body.comment;
+            expect(comment.votes).to.equal(16);
           });
       });
       it("PATCH:400 /api/comments/:comment_id responds with error message if provided comment id that does not exist", () => {
@@ -452,7 +444,8 @@ describe("/api", () => {
       it("DELETE:400 /api/comments/:comment_id responds with status error message if provided comment id that does not exist", () => {
         return request(server)
           .delete("/api/comments/19393")
-          .expect(response => {
+          .expect(404)
+          .then(response => {
             const msg = response.body.msg;
             expect(msg).to.equal("no comment found");
           });
@@ -460,7 +453,8 @@ describe("/api", () => {
       it("DELETE:400 /api/comments/:comment_id responds with status error message if provided invalid data type", () => {
         return request(server)
           .delete("/api/comments/hello")
-          .expect(response => {
+          .expect(400)
+          .then(response => {
             const msg = response.body.msg;
             expect(msg).to.equal("invalid data type");
           });
