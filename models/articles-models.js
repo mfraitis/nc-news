@@ -124,14 +124,11 @@ exports.selectAllArticles = ({ sort_by, order, author, topic }) => {
             .then(arr => {
               if (arr.length === 0) {
                 return Promise.reject({
-                  status: 404,
+                  status: 400,
                   msg: "topic does not exist"
                 });
               } else {
-                return Promise.reject({
-                  status: 404,
-                  msg: "article does not exist"
-                });
+                return articles;
               }
             });
         } else if (author) {
@@ -141,21 +138,15 @@ exports.selectAllArticles = ({ sort_by, order, author, topic }) => {
             .then(arr => {
               if (arr.length === 0) {
                 return Promise.reject({
-                  status: 404,
+                  status: 400,
                   msg: "author does not exist"
                 });
               } else {
-                return Promise.reject({
-                  status: 404,
-                  msg: "article does not exist"
-                });
+                return articles;
               }
             });
         } else {
-          return Promise.reject({
-            status: 404,
-            msg: "article does not exist"
-          });
+          return articles;
         }
       });
   }
