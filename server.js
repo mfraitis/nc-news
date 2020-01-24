@@ -10,10 +10,11 @@ const {
 
 server.use(express.json());
 server.use("/api", apiRouter);
-server.all("/*", routeNotFound);
+// server.all("/*", routeNotFound);
 
 server.use(handlePsqlErrors);
 server.use(handleCustomErrors);
 server.use(handleServerErrors);
 
 module.exports = server;
+

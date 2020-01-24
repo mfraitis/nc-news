@@ -11,12 +11,13 @@ exports.selectArticlesById = ({ article_id }) => {
       if (article.length === 0) {
         return Promise.reject({ status: 404, msg: "article does not exist!" });
       } else {
-        const parsedArticle = article.map(obj => {
-          const articleObj = { ...obj };
-          articleObj.comment_count = +articleObj.comment_count;
-          return articleObj;
-        });
-        return parsedArticle[0];
+        // const parsedArticle = article.map(obj => {
+        //   const articleObj = { ...obj };
+        //   articleObj.comment_count = +articleObj.comment_count;
+        //   return articleObj;
+        // });
+        // return parsedArticle[0];
+        return article[0];
       }
     });
 };
@@ -136,7 +137,7 @@ exports.selectAllArticles = ({ sort_by, order, author, topic }) => {
         } else if (author) {
           return connection("users")
             .select("*")
-            .where("username", user)
+            .where("username", author)
             .then(arr => {
               if (arr.length === 0) {
                 return Promise.reject({
