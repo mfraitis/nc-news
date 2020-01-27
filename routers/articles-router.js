@@ -6,24 +6,24 @@ const {
   getCommentsByArticleId,
   getAllArticles
 } = require("../controllers/articles-controllers");
-const { routeNotFound } = require("../errors/index");
+const { routeNotFound, invalidMethod } = require("../errors/index");
 
 articlesRouter
   .route("/:article_id")
   .get(getArticleById)
   .patch(patchArticleById)
-  .all(routeNotFound);
+  .all(invalidMethod);
 
 articlesRouter
   .route("/:article_id/comments")
   .post(postComment)
   .get(getCommentsByArticleId)
-  .all(routeNotFound);
+  .all(invalidMethod);
 
 articlesRouter
   .route("/")
   .get(getAllArticles)
-  .all(routeNotFound);
+  .all(invalidMethod);
 
 // articlesRouter.all("/*", (err, req, res, next) => {
 //   res.status(405).send({ msg: "Method Not Found status code" });

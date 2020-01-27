@@ -4,7 +4,7 @@ const usersRouter = require("./users-router");
 const articlesRouter = require("./articles-router");
 const commentsRouter = require("./comments-router");
 const { getEndpoints } = require("../controllers/api-controller");
-const { routeNotFound } = require("../errors/index");
+const { invalidMethod, routeNotFound } = require("../errors/index");
 
 apiRouter.use("/topics", topicsRouter);
 apiRouter.use("/users", usersRouter);
@@ -13,7 +13,7 @@ apiRouter.use("/comments", commentsRouter);
 apiRouter
   .route("/")
   .get(getEndpoints)
-  .all(routeNotFound);
+  .all(invalidMethod);
 
 apiRouter.all("/*", routeNotFound);
 

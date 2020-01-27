@@ -21,6 +21,10 @@ exports.handleServerErrors = (err, req, res, next) => {
   res.status(500).send({ msg: "Internal Server Error" });
 };
 
+exports.invalidMethod = (req, res, next) => {
+  return next({ status: 405, msg: "invalid method" });
+};
+
 exports.routeNotFound = (req, res, next) => {
-  return next({ status: 404, msg: "Route Not Found" });
+  return next({ status: 404, msg: "route not found" });
 };
