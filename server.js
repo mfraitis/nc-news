@@ -9,12 +9,12 @@ const {
 
 server.use(express.json());
 server.use("/api", apiRouter);
-server.all("/*", (err, req, res, next) => {
-  res.status(404).send({ msg: "route not found" });
-});
-server.use(handlePsqlErrors);
 
+server.use(handlePsqlErrors);
 server.use(handleCustomErrors);
 server.use(handleServerErrors);
 
+server.all("/*", (err, req, res, next) => {
+  res.status(404).send({ msg: "route not found" });
+});
 module.exports = server;
