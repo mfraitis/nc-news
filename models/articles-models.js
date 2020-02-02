@@ -50,17 +50,7 @@ exports.insertComment = ({ article_id }, { username, body }) => {
   } else return Promise.reject({ status: 400, msg: "input data missing" });
 };
 
-exports.selectCommentsByArticleId = ({ article_id }, query) => {
-  const { sort_by, order } = query;
-  // if (
-  //   (Object.keys(query) !== 0 && Object.hasOwnProperty("sort_by")) &&
-  //   Object.hasOwnProperty("order")
-  // ) {
-  //   return Promise.reject({
-  //     status: 400,
-  //     msg: "invalid query"
-  //   });
-  // }
+exports.selectCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
   if (order && order !== "asc" && order !== "desc") {
     return Promise.reject({
       status: 400,
@@ -124,7 +114,7 @@ exports.selectAllArticles = ({ sort_by, order, author, topic }) => {
             .then(arr => {
               if (arr.length === 0) {
                 return Promise.reject({
-                  status: 400,
+                  status: 404,
                   msg: "topic does not exist"
                 });
               } else {
@@ -138,7 +128,7 @@ exports.selectAllArticles = ({ sort_by, order, author, topic }) => {
             .then(arr => {
               if (arr.length === 0) {
                 return Promise.reject({
-                  status: 400,
+                  status: 404,
                   msg: "author does not exist"
                 });
               } else {

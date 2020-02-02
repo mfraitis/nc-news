@@ -1,11 +1,13 @@
 const usersRouter = require("express").Router();
 const { getUsersByUsername } = require("../controllers/users-controllers");
-const { routeNotFound, invalidMethod } = require("../errors/index");
+const { routeNotFound } = require("../errors/index");
 
 usersRouter
   .route("/:username")
   .get(getUsersByUsername)
-  .all(invalidMethod);
+  .all((req, res, next) => {
+    res.status(405).send({ msg: "invalid method" });
+  });
 
 // usersRouter.all("/*", (err, req, res, next) => {
 //   res.status(405).send({ msg: "Method Not Found status code" });

@@ -127,15 +127,7 @@ describe("/api", () => {
             expect(msg).to.equal("invalid data type");
           });
       });
-      // it("PATCH:400 /api/articles/:article_id responds with status 400 when not provided a body", () => {
-      //   return request(server)
-      //     .patch("/api/articles/1")
-      //     .expect(400)
-      //     .then(response => {
-      //       const msg = response.body.msg;
-      //       expect(msg).to.equal("invalid body provided");
-      //     });
-      // });
+
       it("PATCH:404 /api/articles/:article_id responds with status 404 when provided an id that does not exist", () => {
         return request(server)
           .patch("/api/articles/1000")
@@ -156,16 +148,6 @@ describe("/api", () => {
             expect(msg).to.equal("invalid data type");
           });
       });
-      // it("PATCH:400 /api/articles/:article_id responds with error message when passed another property", () => {
-      //   return request(server)
-      //     .patch("/api/articles/1")
-      //     .expect(400)
-      //     .send({ inc_votes: "1", name: "Mitch" })
-      //     .then(response => {
-      //       const msg = response.body.msg;
-      //       expect(msg).to.equal("invalid body provided");
-      //     });
-      // });
     });
   });
   describe("/articles/:article_id/comments", () => {
@@ -363,7 +345,7 @@ describe("/api", () => {
             expect(msg).to.equal("order input invalid");
           });
       });
-      it("GET:404 /api/articles?topic responds with an error message when passed an error that does not exist", () => {
+      it("GET:404 /api/articles?topic responds with an error message when passed a topic that does not exist", () => {
         return request(server)
           .get("/api/articles?topic=none")
           .expect(404)
@@ -372,13 +354,13 @@ describe("/api", () => {
             expect(msg).to.equal("topic does not exist");
           });
       });
-      it("GET:404 /api/articles?topic responds with error message when passed a topic that does exist but has no articles", () => {
+      it("GET:200 /api/articles?topic responds with an empty array  when passed a topic that does exist but has no articles", () => {
         return request(server)
           .get("/api/articles?topic=paper")
-          .expect(404)
+          .expect(200)
           .then(response => {
-            const msg = response.body.msg;
-            expect(msg).to.equal("article does not exist");
+            const articles = response.body.articles;
+            expect(articles).to.eql([]);
           });
       });
     });

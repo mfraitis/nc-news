@@ -3,13 +3,15 @@ const {
   patchCommentById,
   deleteCommentById
 } = require("../controllers/comments-controllers");
-const { routeNotFound, invalidMethod } = require("../errors/index");
+const { routeNotFound } = require("../errors/index");
 
 commentsRouter
   .route("/:comment_id")
   .patch(patchCommentById)
   .delete(deleteCommentById)
-  .all(invalidMethod);
+  .all((req, res, next) => {
+    res.status(405).send({ msg: "invalid method" });
+  });
 
 // commentsRouter.all("/*", (err, req, res, next) => {
 //   res.status(405).send({ msg: "Method Not Found status code" });

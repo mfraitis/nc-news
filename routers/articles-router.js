@@ -6,7 +6,11 @@ const {
   getCommentsByArticleId,
   getAllArticles
 } = require("../controllers/articles-controllers");
-const { routeNotFound, invalidMethod } = require("../errors/index");
+const { routeNotFound } = require("../errors/index");
+
+const invalidMethod = (req, res, next) => {
+  res.status(405).send({ msg: "invalid method" })
+}
 
 articlesRouter
   .route("/:article_id")
