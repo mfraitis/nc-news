@@ -79,7 +79,14 @@ exports.selectCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
   }
 };
 
-exports.selectAllArticles = ({ sort_by, order, author, topic }) => {
+exports.selectAllArticles = ({
+  sort_by,
+  order,
+  author,
+  topic,
+  limit = 10,
+  p = 1
+}) => {
   if (order && order !== "asc" && order !== "desc") {
     return Promise.reject({
       status: 400,
@@ -103,6 +110,8 @@ exports.selectAllArticles = ({ sort_by, order, author, topic }) => {
         if (author) query.where("articles.author", author);
         if (topic) query.where("topic", topic);
       })
+      .limit(limit)
+      .offset((p - 1) * limit)
       .returning("*")
       .then(articles => {
         if (articles.length !== 0) {
