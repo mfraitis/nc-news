@@ -1,12 +1,9 @@
 # Northcoders News API
 
-**You can clone this repository but do not fork it**
+## About
 
-## Background
-
-We will be building the API to use in the Northcoders News Sprint during the Front End block of the course.
-
-Your database will be PSQL, and you will interact with it using [Knex](https://knexjs.org).
+A RESTful API for Northcoders News.
+The database is PSQL, and queried using [Knex](https://knexjs.org).
 
 ## Step 1 - Setting up your own repository
 
